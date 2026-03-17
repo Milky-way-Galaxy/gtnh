@@ -687,8 +687,8 @@ machines["Advanced Assembly Line"] = {
 
 machines["Large Fluid Extractor"] = {
     overclocker: StandardOverclocker.onlyNormal(),
-    speed: (recipe, choices) => 1.5 * Math.pow(1.10, (choices.coilTier + 1)),
-    power: (recipe, choices) => 0.80 * Math.pow(0.90, (choices.coilTier + 1)),
+    speed: (recipe, choices) => 1.5 + choices.coilTier * 0.1,
+    power: (recipe, choices) => 0.80 * Math.pow(0.90, choices.coilTier),
     parallels: (recipe, choices) => (choices.solenoidTier + 2) * 8,
     choices: {coilTier: CoilTierChoice, solenoidTier: {description: "Solenoid Tier", choices: ["MV", "HV", "EV", "IV", "LuV", "ZPM", "UV", "UHV", "UEV", "UIV", "UMV"]}},
 };
