@@ -1,6 +1,6 @@
 import { Repository, Goods, OreDict, RecipeObject } from "./repository.js";
 import { NeiSelect, ShowNei, ShowNeiMode } from "./nei.js";
-import { ShowTooltip, HideTooltip, IsHovered } from "./tooltip.js";
+import { ShowTooltip, HideTooltip, IsHovered, currentTooltipElement } from "./tooltip.js";
 
 let globalIndex = 0;
 let oredictElements: IconBox[] = [];
@@ -20,6 +20,36 @@ window.setInterval(() => {
 }, 500);
 
 let highlightStyle: HTMLStyleElement = document.getElementById('item-icon-highlight-style') as HTMLStyleElement;
+
+function CloseCurrentTooltip() {
+    if (currentTooltipElement) {
+        HideTooltip(currentTooltipElement);
+    }
+
+    if (highlightStyle) {
+        highlightStyle.textContent = "";
+    }
+}
+
+function CloseTooltipIfOutside(event: Event) {
+    const target = event.target as HTMLElement | null;
+
+    if (!target) return;
+    if (target.closest("item-icon")) return;
+    if (target.closest("#tooltip")) return;
+
+    CloseCurrentTooltip();
+}
+
+document.addEventListener("touchstart", CloseTooltipIfOutside, { passive: true, capture: true });
+document.addEventListener("mousedown", CloseTooltipIfOutside, { passive: true, capture: true });
+document.addEventListener("click", CloseTooltipIfOutside, { passive: true, capture: true });
+
+document.addEventListener("keydown", (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+        CloseCurrentTooltip();
+    }
+});
 
 export class IconBox extends HTMLElement {
     public obj: RecipeObject | null = null;
@@ -149,7 +179,7 @@ export class IconBox extends HTMLElement {
             return;
         }
 
-        if (action) return;
+        if (action && action !== "item_icon_click") return;
 
         ShowNei(this.obj, ShowNeiMode.Production, null);
     }
@@ -162,7 +192,7 @@ export class IconBox extends HTMLElement {
             return;
         }
 
-        if (action) return;
+        if (action && action !== "item_icon_click") return;
 
         ShowNei(this.obj, ShowNeiMode.Consumption, null);
     }
